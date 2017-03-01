@@ -1,0 +1,44 @@
+.bookname.ng-valid {
+    background-color: lightgreen;
+}
+.bookname.ng-dirty.ng-invalid-pattern {
+    background-color: red;
+}
+.bookname.ng-dirty.ng-invalid-required {
+    background-color: red;
+}
+.bookname.ng-dirty.ng-invalid-minlength {
+    background-color: yellow;
+}
+
+.bauthor.ng-valid {
+    background-color: lightgreen;
+}
+.bauthor.ng-dirty.ng-invalid-required {
+    background-color: red;
+}
+.bauthor.ng-dirty.ng-invalid-pattern {
+    background-color: red;
+}
+.bauthor.ng-dirty.ng-invalid-minlength {
+    background-color: yellow;
+}
+
+
+.bookyear.ng-valid {
+    background-color: lightgreen;
+}
+.bookyear.ng-dirty.ng-invalid-required {
+    background-color: red;
+}
+.bookyear.ng-dirty.ng-invalid-minlength {
+    background-color: yellow;
+}
+
+.bdescription.ng-valid {
+    background-color: lightgreen;
+}
+.bdescription.ng-dirty.ng-invalid-required {
+    background-color: red;
+}
+
