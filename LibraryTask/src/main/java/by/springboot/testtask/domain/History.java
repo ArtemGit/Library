@@ -15,14 +15,18 @@ public class History {
     @Id
     @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
 
+    @Column(name="date",nullable = false)
+    private String date;
 
     @ManyToOne
-    @JoinColumn(name = "bookHistory", nullable = false)
+    @JoinColumn(name = "id_book", nullable = false)
     private Book book;
 
     @ManyToOne
-    @JoinColumn(name = "userBookHistory", nullable = false)
+    @JoinColumn(name = "username", nullable = false)
     private User user;
+
+
 }

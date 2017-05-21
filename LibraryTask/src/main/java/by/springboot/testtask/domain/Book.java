@@ -58,9 +58,4 @@ public class Book {
 
     @Column(name="image_name")
     private String imageName;
-
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<History> bookHistory = new HashSet<>();
-
-
 }

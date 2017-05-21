@@ -21,6 +21,4 @@ public class User {
     @Column(name="password")
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<History> userBookHistory = new HashSet<>();
 }
