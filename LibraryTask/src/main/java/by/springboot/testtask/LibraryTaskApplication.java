@@ -14,14 +14,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 
 @SpringBootApplication
@@ -64,6 +61,7 @@ public class LibraryTaskApplication extends SpringBootServletInitializer {
 		viewResolver.setViewClass(JstlView.class);
 		viewResolver.setPrefix("/WEB-INF/views/");
 		viewResolver.setSuffix(".jsp");
+		viewResolver.setSuffix(".html");
 		registry.viewResolver(viewResolver);
 	}
 	@Bean
@@ -75,5 +73,7 @@ public class LibraryTaskApplication extends SpringBootServletInitializer {
 	public LRUCache cacheSupport() {
 		return new LRUCache(0);
 	}
+
+
 
 }

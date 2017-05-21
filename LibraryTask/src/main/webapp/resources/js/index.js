@@ -13,7 +13,21 @@ app.directive('dynamic', function ($compile) {
         }
     };
 });
+app.directive('validFile', function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, el, attrs, ngModel) {
 
+            //change event is fired when file is selected
+            el.bind('change', function () {
+                scope.$apply(function () {
+                    ngModel.$setViewValue(el.val());
+                    ngModel.$render();
+                });
+            });
+        }
+    };
+});
 //////////////////////////////////////////////////////////////////////////
 //////////Factory for work with books///////////////
 app.factory('Book', ['$resource', function ($resource) {
@@ -63,7 +77,9 @@ app.controller("mainLibraryController", ['$sce', '$scope', '$http', 'Book', 'cfp
         $scope.listBooks = Book.query(function (success) {
                 if ($scope.listBooks.length === 0)
                     $http.get("/booksList/booksListEmpty").then(function successCallback(response) {
+                        angular.element(document.querySelector('.filter')).empty();
                         angular.element(document.querySelector('.answerMessages')).empty();
+
                         $scope.html2 = $sce.trustAsHtml(response.data);
                     }, function errorCallback(response) {
                         alert("Ошибки работы сервиса");
@@ -156,14 +172,18 @@ app.controller("mainLibraryController", ['$sce', '$scope', '$http', 'Book', 'cfp
                 console.log(ex);
             }
         }).error(function (data) {
-            console.log(data);
+            $http.get("/book/errorWatching").then(function successCallback(response) {
+                $scope.html2 = $sce.trustAsHtml(response.data);
+            }, function errorCallback(response) {
+                alert("Ошибки работы сервиса");
+            });
         }).finally(function () {
 
             cfpLoadingBar.complete();
-            //after request make server delete downloaded file if it was not get from cache , save oly zip
+            //after request make server delete downloaded file if it was not get from cache , save only zip
             if (!cache)
                 $http.delete('/document/delete/' + id, {params: {idbook: id}}).error(function (data) {
-                    console.log(data);
+                    alert("Ошибки сервера");
                 });
         });
     };
@@ -201,7 +221,11 @@ app.controller("mainLibraryController", ['$sce', '$scope', '$http', 'Book', 'cfp
                 console.log(ex);
             }
         }).error(function (data) {
-            console.log(data);
+            $http.get("/book/errorWatching").then(function successCallback(response) {
+                $scope.html2 = $sce.trustAsHtml(response.data);
+            }, function errorCallback(response) {
+                alert("Ошибки работы сервиса");
+            });
         }).finally(function () {
             cfpLoadingBar.complete();
             //after request make server delete downloaded file , save oly zip
@@ -213,12 +237,23 @@ app.controller("mainLibraryController", ['$sce', '$scope', '$http', 'Book', 'cfp
     };
     //////////////add /edit --- get form
     $scope.addBookToLibrary = function () {
+        $scope.book = new Book();
+        $scope.signedList = [true, false]
         $http.get("/bookDetails/addBookForm/view").then(function successCallback(response) {
             angular.element(document.querySelector('.bookBlock')).empty();
+            angular.element(document.querySelector('.filter')).empty();
             $scope.html = $sce.trustAsHtml(response.data);
         }, function errorCallback(response) {
             alert("Ошибки работы сервиса");
         });
+    }
+    $scope.checkboxModel = {
+        value: true
+    };
+    $scope.submit = function (book) {
+        angular.element(document.querySelector('.bookBlock')).empty();
+        book.signed = $scope.checkboxModel.value;
+        book.$save();
     }
     ////////////////////////////////////////////////
     $scope.ifExistBook = function (id) {
@@ -230,39 +265,35 @@ app.controller("mainLibraryController", ['$sce', '$scope', '$http', 'Book', 'cfp
         return false;
     }
     //////////////////////////////////////////
-    var self=this;
-    self.getEditDescribingPartForm=function()
-    {
-        $http.get("/bookDetails/describePartForm/view").then(function successCallback(response) {
-            angular.element(document.querySelector('.bookBlock')).empty();
-            $scope.html = $sce.trustAsHtml(response.data);
-        }, function errorCallback(response) {
-            alert("Ошибки работы сервиса");
-        });
-    }
-    $scope.edit=function(book)
-    {
-        $scope.book=book;
-        self.getEditDescribingPartForm();
+    /* var self = this;
+     self.getEditDescribingPartForm = function () {
+     $http.get("/bookDetails/describePartForm/view").then(function successCallback(response) {
+     angular.element(document.querySelector('.bookBlock')).empty();
+     $scope.html = $sce.trustAsHtml(response.data);
+     }, function errorCallback(response) {
+     alert("Ошибки работы сервиса");
+     });
+     }*/
+    $scope.edit = function (book) {
 
+        $scope.addBookToLibrary();
+        $scope.book = book;
     }
-    $scope.editContent=function(book)
-    {
-        $scope.book=book;
-        self.getEditContentForm();
+    /*  $scope.editContent = function (book) {
+     $scope.book = book;
+     self.getEditContentForm();
 
-    }
+     }
 
-    self.getEditContentForm=function()
-    {
-        $http.get("/bookDetails/updateContentForm/view").then(function successCallback(response) {
-            angular.element(document.querySelector('.bookBlock')).empty();
-            $scope.html = $sce.trustAsHtml(response.data);
-        }, function errorCallback(response) {
-            alert("Ошибки работы сервиса");
-        });
-    }
-
+     self.getEditContentForm = function () {
+     $http.get("/bookDetails/updateContentForm/view").then(function successCallback(response) {
+     angular.element(document.querySelector('.bookBlock')).empty();
+     $scope.html = $sce.trustAsHtml(response.data);
+     }, function errorCallback(response) {
+     alert("Ошибки работы сервиса");
+     });
+     }
+     */
 
     $scope.submitEdit = function () {
         self.updateBook();
@@ -286,6 +317,106 @@ app.controller("mainLibraryController", ['$sce', '$scope', '$http', 'Book', 'cfp
                     });
 
             });
+    };
+    ////////////////////////////////////////////////////////////////////
+    $scope.upload = function (id) {
+        $http.get("/bookDetails/uploadBookForm/view/" + id).then(function successCallback(response) {
+            angular.element(document.querySelector('.bookBlock')).empty();
+            $scope.html = $sce.trustAsHtml(response.data);
+        }, function errorCallback(response) {
+            alert("Ошибки работы сервиса");
+        });
+    }
+    ///////////////////////////////////////////////////////////////////////
+    $scope.uploadImage = function (id) {
+        $http.get("/bookDetails/uploadImageBookForm/view/" + id).then(function successCallback(response) {
+            angular.element(document.querySelector('.bookBlock')).empty();
+            $scope.html = $sce.trustAsHtml(response.data);
+        }, function errorCallback(response) {
+            alert("Ошибки работы сервиса");
+        });
+    }
+
+//////////////////////////////////////////////////////////////////////////////////
+    $scope.ifExist = function (book) {
+        for (var i = 0; i < $scope.listBooks.length; i++) {
+            if ($scope.listBooks[i].id === book.id || $scope.listBooks[i].issn === book.issn) {
+                return true;
+            }
+        }
+        return false;
+    }
+    $scope.imageName = function (book) {
+        if (book.imageName === null)
+            return "/resources/img/book.png";
+        else return "/resources/Library/Book_Images/" + book.imageName;
+    }
+    $scope.showFilter = function () {
+        $scope.signed = false;
+        $scope.issn = undefined;
+        $scope.publicationPlace = undefined;
+        $scope.name = undefined;
+        $scope.publishHouse = undefined;
+        $scope.publishStartYear = undefined;
+        $scope.publishEndYear = undefined;
+        $http.get("/filter").then(function successCallback(response) {
+            angular.element(document.querySelector('.filter')).empty();
+            angular.element(document.querySelector('.bookBlock')).empty();
+            $scope.html3 = $sce.trustAsHtml(response.data);
+        }, function errorCallback(response) {
+            alert("Ошибки работы сервиса");
+        });
+    };
+    $scope.signed = false;
+    $scope.issn = undefined;
+    $scope.publicationPlace = undefined;
+    $scope.name = undefined;
+    $scope.publishHouse = undefined;
+    $scope.publishStartYear = undefined;
+    $scope.publishEndYear = undefined;
+    $scope.changeCheckbox = function () {
+        $scope.signed = !$scope.signed;
+    };
+
+    $scope.filterStart = function () {
+        $http.get("/filter/start/", {
+            params: {
+                "issn": $scope.issn,
+                "publicationPlace": $scope.publicationPlace,
+                "name": $scope.name,
+                "publishHouse": $scope.publishHouse,
+                "publishStartYear": $scope.publishStartYear,
+                "publishEndYear": $scope.publishEndYear,
+                "signed": $scope.signed
+            }
+        }).then(function successCallback(response) {
+            $scope.listBooks = response.data;
+            if ($scope.listBooks.length === 0)
+                $http.get("/booksList/booksListEmpty").then(function successCallback(response) {
+                    angular.element(document.querySelector('.answerMessages')).empty();
+                    $scope.html2 = $sce.trustAsHtml(response.data);
+                }, function errorCallback(response) {
+                    alert("Ошибки работы сервиса");
+                });
+            else {
+                $http.get("/books/view").then(function successCallback(response) {
+                    angular.element(document.querySelector('.bookBlock')).empty();
+                    $scope.html = $sce.trustAsHtml(response.data);
+                }, function errorCallback(response) {
+                    alert("Ошибки работы сервиса");
+                });
+            }
+        }, function errorCallback(response) {
+            if (response.status == 409) {
+                $http.get("/book/filterErrorMessage").then(function successCallback(response) {
+                    angular.element(document.querySelector('.answerMessages')).empty();
+                    $scope.html2 = $sce.trustAsHtml(response.data);
+                }, function errorCallback(response) {
+                    alert("Ошибки работы сервиса");
+                });
+            }
+            else alert("Ошибки работы сервиса");
+        });
     };
 }]);
 //////////////////////////////////////////////

@@ -1,13 +1,12 @@
 package by.springboot.testtask.web;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * Created by Тёма on 22.02.2017.
- */
+
 @Controller
 public class MainController {
 
@@ -36,10 +35,24 @@ public class MainController {
         model.setViewName("addBookForm");
         return  model;
     }
+    @RequestMapping(value = "/bookDetails/uploadBookForm/view/{idbook}", method = RequestMethod.GET)
+    public ModelAndView getUploadBookForm(@PathVariable("idbook") int idbook) {
+        ModelAndView model = new ModelAndView();
+        model.setViewName("uploadBookForm");
+        model.addObject("idBook",idbook);
+        return  model;
+    }
+    @RequestMapping(value = "/bookDetails/uploadImageBookForm/view/{idbook}", method = RequestMethod.GET)
+    public ModelAndView getUploadBookImageForm(@PathVariable("idbook") int idbook) {
+        ModelAndView model = new ModelAndView();
+        model.setViewName("uploadBookImageForm");
+        model.addObject("idBook",idbook);
+        return  model;
+    }
     @RequestMapping(value = "/bookDetails/describePartForm/view", method = RequestMethod.GET)
     public ModelAndView getDescribePartForm() {
         ModelAndView model = new ModelAndView();
-        model.setViewName("editDescribingPart");
+        model.setViewName("addBookForm");
         return  model;
     }
 
@@ -47,6 +60,12 @@ public class MainController {
     public ModelAndView getUpdateContentForm() {
         ModelAndView model = new ModelAndView();
         model.setViewName("updateContentForm");
+        return  model;
+    }
+    @RequestMapping(value = "filter", method = RequestMethod.GET)
+    public ModelAndView getFilterForm() {
+        ModelAndView model = new ModelAndView();
+        model.setViewName("filter");
         return  model;
     }
 }

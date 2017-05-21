@@ -5,9 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * Created by Тёма on 23.02.2017.
- */
+
 @Controller
 public class MessageController {
     @RequestMapping(value = "/booksList/booksListEmpty", method = RequestMethod.GET)
@@ -66,6 +64,19 @@ public class MessageController {
         model.setViewName("errorMessage");
         return model;
     }
-
+    @RequestMapping(value = "/book/errorWatching", method = RequestMethod.GET)
+    public ModelAndView getErrorWatchingMessage() {
+        ModelAndView model = new ModelAndView();
+        model.addObject("message", "Контент для данного журнала не был загружен!!");
+        model.setViewName("errorMessage");
+        return model;
+    }
+    @RequestMapping(value = "/book/filterErrorMessage", method = RequestMethod.GET)
+    public ModelAndView getFilterErrorMessage() {
+        ModelAndView model = new ModelAndView();
+        model.addObject("message", "Некорректные параметры запроса для фильтра!!");
+        model.setViewName("errorMessage");
+        return model;
+    }
 
     }

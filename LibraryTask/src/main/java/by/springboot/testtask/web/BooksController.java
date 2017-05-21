@@ -5,6 +5,7 @@ import by.springboot.testtask.domain.LRUCache;
 import by.springboot.testtask.reposiroty.BookRepository;
 import by.springboot.testtask.reposiroty.FileContentInterface;
 import jersey.repackaged.com.google.common.collect.Lists;
+import org.omg.CORBA.BooleanSeqHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -30,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -89,41 +92,75 @@ public class BooksController {
     }
 
     //////////////////////----- Add Book
-    @RequestMapping(value = "/books/addBook", method = RequestMethod.POST)
-    public ModelAndView addBook(HttpServletRequest request, @RequestParam("bookContent") MultipartFile file,
-                                @RequestParam("baookname") String baookname, @RequestParam("bookauthor") String bookauthor,
-                                @RequestParam("bookYear") int bookYear, @RequestParam("bookdescription") String bookdescription) throws IOException {
+    @RequestMapping(value = "/books/uploadBook/{idBook}", method = RequestMethod.POST)
+    public ModelAndView addBookContent(HttpServletRequest request, @RequestParam("bookContent") MultipartFile file,
+                                       @PathVariable("idBook") int idBook) throws IOException {
         ModelAndView model = new ModelAndView();
         model.setViewName("index");
-        Book book = new Book();
-        book.setName(baookname);
-        book.setAuthor(bookauthor);
-        book.setYear(bookYear);
-        book.setDescription(bookdescription);
-        bookRepository.save(book);
+
         if (!file.isEmpty()) {
+            if (bookRepository.findOne(idBook) != null) {
+                String destination = request.getSession().getServletContext().getRealPath("/resources/Library");
 
-            String destination = request.getSession().getServletContext().getRealPath("/resources");
+                File gettingFile = content.convert(file, destination);
 
-            File gettingFile = content.convert(file, destination);
-
-            List<Book> myList = Lists.newArrayList(bookRepository.findAll());
-            content.toZip(gettingFile, myList.get(myList.size() - 1).getIdbook());
-            gettingFile.delete();
+                content.toZip(gettingFile, idBook);
+                gettingFile.delete();
+            }
         }
+
+        return model;
+    }
+
+    //////////////////////----- Add Book Image
+    @RequestMapping(value = "/books/upload/image/book/{idBook}", method = RequestMethod.POST)
+    public ModelAndView addBookImage(HttpServletRequest request, @RequestParam("image") MultipartFile file,
+                                     @PathVariable("idBook") int idBook) throws IOException {
+        ModelAndView model = new ModelAndView();
+        model.setViewName("index");
+
+        if (!file.isEmpty()) {
+            Book book = bookRepository.findOne(idBook);
+            if (book != null) {
+                String str = "";
+                if (!file.isEmpty()) {
+                    BufferedImage src = ImageIO.read(new ByteArrayInputStream(file.getBytes()));
+                    str = file.getName() + "_" + idBook + file.getOriginalFilename()
+                            .substring(file.getOriginalFilename().indexOf('.'), file.getOriginalFilename().length());
+                    File directory = new File(request.getSession().getServletContext().getRealPath("/resources/Library/Book_Images"));
+                    if (!directory.exists()) {
+                        directory.mkdirs();
+                    }
+                    File destination = new File(directory, str);
+                    ImageIO.write(src, str.substring(str.indexOf('.') + 1, str.length()), destination);
+                    book.setImageName(str);
+                    bookRepository.save(book);
+
+                }
+            }
+        }
+        return model;
+    }
+
+    //////////////////////----- Add Book
+    @RequestMapping(value = {"/books/{idbook}", "/books"}, method = RequestMethod.POST)
+    public ModelAndView addBook(@RequestBody Book book) throws IOException {
+        ModelAndView model = new ModelAndView();
+        model.setViewName("index");
+        bookRepository.save(book);
 
         return model;
     }
 ///////////////////////Document book
 
-    @RequestMapping(value = "/document", method = RequestMethod.GET, produces = "application/octet-stream")
-    public ResponseEntity<InputStreamResource> getFile(HttpServletRequest request, int idbook) throws IOException {
+    @RequestMapping(value = {"/document","/document/{idbook}"}, method = RequestMethod.GET, produces = "application/octet-stream")
+    public ResponseEntity<InputStreamResource> getFile(HttpServletRequest request,@RequestParam("idbook") int idbook) throws IOException {
 
 
-        String pathToLibraryFiles = request.getSession().getServletContext().getRealPath("/resources");
+        String pathToLibraryFiles = request.getSession().getServletContext().getRealPath("/resources/Library");
         File folder = new File(pathToLibraryFiles);
         //Zip saves in the parent folder if was F:\Folder\Folder2\File.pdf => zip will be in F:\
-        String pathToZip = folder.getPath().substring(0, folder.getPath().indexOf(File.separator)) + File.separator;
+        String pathToZip = folder.getPath().substring(0, folder.getPath().lastIndexOf(File.separator)) + File.separator;
         int countBooksInLibrary = content.countZipFilesInLibrary(pathToZip);
         File zipFolder = new File(pathToZip);
         int cacheSize = lruCacheContent.getCacheSize();
@@ -133,7 +170,7 @@ public class BooksController {
             lruCacheContentFileName = new LRUCache(countBooksInLibrary);
         }
         byte[] fileContentCache = lruCacheContent.get(idbook);
-        //в кэшк нет файла
+        //в кэшe нет файла
         if (fileContentCache == null) {
             try {
                 String archiveBook = zipFolder.getPath() + idbook + ".zip";
@@ -150,6 +187,7 @@ public class BooksController {
                 }
             } catch (IOException e) {
                 System.err.println("Файл свойств отсуствует!");
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }
         //в кэше есть файл
@@ -205,7 +243,7 @@ public class BooksController {
     }
 
     ////////////////////-----Update basic information book from library
-    @RequestMapping(value = "/books/{idbook}", method = RequestMethod.PUT)
+   /* @RequestMapping(value = "/books/{idbook}", method = RequestMethod.PUT)
     public ResponseEntity<Book> updateBook(@PathVariable("idbook") int id, @RequestBody Book bookupdate) {
 
         Book book = bookRepository.findOne(id);
@@ -214,11 +252,41 @@ public class BooksController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         book.setDescription(bookupdate.getDescription());
-        book.setYear(bookupdate.getYear());
+       /* book.setYear(bookupdate.getYear());
         book.setAuthor(bookupdate.getAuthor());
-        book.setName(bookupdate.getName());
-        bookRepository.save(book);
+        book.setName(bookupdate.getName());*/
+    /*    bookRepository.save(book);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }*/
+    ////////////////////-----Filter
+    @RequestMapping(value = "/filter/start", method = RequestMethod.GET)
+    public ResponseEntity<List<Book>> filter(@RequestParam(value="issn", required=false,defaultValue = "") String issn,
+                                             @RequestParam(value="publicationPlace", required=false,defaultValue = "") String publicationPlace,
+                                             @RequestParam(value="name", required=false,defaultValue = "") String name,
+                                             @RequestParam(value="publishHouse", required=false,defaultValue = "") String publishHouse,
+                                             @RequestParam(value="publishStartYear", required=false,defaultValue = "") String publishStartYear,
+                                             @RequestParam(value="publishEndYear", required=false,defaultValue = "") String publishEndYear,
+                                             @RequestParam(value="signed", required=false,defaultValue = "") String signed) {
+
+        List<Book> booksList = Lists.newArrayList(bookRepository.findAll());
+        if (booksList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        try {
+            return new ResponseEntity<>(booksList.stream().filter(book ->
+                    (StringUtils.isEmpty(issn) ? true: book.getIssn() == Integer.parseInt(issn)) &&
+                            (StringUtils.isEmpty(publicationPlace)? true: book.getPublicationPlace().matches(".*" + publicationPlace + ".*")) &&
+                            (StringUtils.isEmpty(name) ? true: book.getName().matches(".*" + name + ".*")) &&
+                            (StringUtils.isEmpty(publishHouse) ? true: book.getPublishHouse().matches(".*" + publishHouse + ".*")) &&
+                            (StringUtils.isEmpty(publishStartYear) ? true: book.getPublishStartYear() == Integer.parseInt(publishStartYear)) &&
+                            (StringUtils.isEmpty(publishEndYear) ? true: book.getPublishEndYear() == Integer.parseInt(publishEndYear)) &&
+                            (StringUtils.isEmpty(signed) ? true: book.getSigned().equals(Boolean.parseBoolean(signed))))
+                    .collect(Collectors.toList()), HttpStatus.OK);
+        }
+        catch(Exception e)
+        {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
 

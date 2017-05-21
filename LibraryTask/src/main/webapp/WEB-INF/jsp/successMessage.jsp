@@ -2,6 +2,6 @@
 <!-- Сообщение об успешном выполнения действия -->
 <div class="alert alert-success Myclose"  ng-click="deleteAlert()">
     <!-- Кнопка для закрытия сообщения, созданная с помощью элемента button -->
-    <button type="button" class="close" data-dismiss="alert">?</button>
+    <button type="button" class="close" data-dismiss="alert">X</button>
     ${message}
 </div>

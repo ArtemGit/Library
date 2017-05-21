@@ -81,7 +81,7 @@ public class FileContentImpl implements FileContentInterface {
     public void toZip(File file,int idBook) throws IOException {
         String fileNmae=file.getName();
         String fpath=file.getPath();
-        try(ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(fpath.substring(0,fpath.indexOf(File.separator))+File.separator+idBook+".zip"));
+        try(ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(fpath.substring(0,fpath.lastIndexOf(File.separator))+File.separator+idBook+".zip"));
 
             FileInputStream fis= new FileInputStream(fpath);)
         {
@@ -140,7 +140,7 @@ public class FileContentImpl implements FileContentInterface {
             folderDestination.mkdirs();
         }
 
-        File convFile = new File(path+file.getOriginalFilename());
+        File convFile = new File(folderDestination+File.separator+file.getOriginalFilename());
         System.out.println("Created getting file? "+convFile.createNewFile());
         FileOutputStream fos = new FileOutputStream(convFile);
         byte[] buffer = file.getBytes();

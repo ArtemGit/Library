@@ -1,38 +1,29 @@
-.bookname.ng-valid {
+.book-string.ng-valid {
     background-color: lightgreen;
 }
-.bookname.ng-dirty.ng-invalid-pattern {
+.book-string.ng-dirty.ng-invalid-pattern {
     background-color: red;
 }
-.bookname.ng-dirty.ng-invalid-required {
+.book-string.ng-dirty.ng-invalid-required {
     background-color: red;
 }
-.bookname.ng-dirty.ng-invalid-minlength {
-    background-color: yellow;
-}
-
-.bauthor.ng-valid {
-    background-color: lightgreen;
-}
-.bauthor.ng-dirty.ng-invalid-required {
-    background-color: red;
-}
-.bauthor.ng-dirty.ng-invalid-pattern {
-    background-color: red;
-}
-.bauthor.ng-dirty.ng-invalid-minlength {
+.book-string.ng-dirty.ng-invalid-minlength {
     background-color: yellow;
 }
 
 
-.bookyear.ng-valid {
+
+.book-year.ng-valid {
     background-color: lightgreen;
 }
-.bookyear.ng-dirty.ng-invalid-required {
+.book-year.ng-dirty.ng-invalid-required {
     background-color: red;
 }
-.bookyear.ng-dirty.ng-invalid-minlength {
+.book-year.ng-dirty.ng-invalid-minlength {
     background-color: yellow;
+}
+.book-year.ng-dirty.ng-invalid-pattern {
+    background-color: red;
 }
 
 .bdescription.ng-valid {
