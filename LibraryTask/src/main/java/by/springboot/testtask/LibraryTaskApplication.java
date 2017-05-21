@@ -56,14 +56,7 @@ public class LibraryTaskApplication extends SpringBootServletInitializer {
 		return messageSource;
 	}
 
-	public void configureViewResolvers(ViewResolverRegistry registry) {
-		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setViewClass(JstlView.class);
-		viewResolver.setPrefix("/WEB-INF/views/");
-		viewResolver.setSuffix(".jsp");
-		viewResolver.setSuffix(".html");
-		registry.viewResolver(viewResolver);
-	}
+
 	@Bean
 	public FileContentInterface downloadFileInterface() {
 		return new FileContentImpl();
