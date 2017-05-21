@@ -52,7 +52,7 @@ public class BooksController {
 
     ////////////////////-----Get List Library Books
     @RequestMapping(value = "/books", method = RequestMethod.GET)
-    public ResponseEntity<List<Book>> listAllGoodsgroups(HttpServletRequest request) {
+    public ResponseEntity<List<Book>> listAll(HttpServletRequest request) {
 
         List<Book> booksList = Lists.newArrayList(bookRepository.findAll());
         if (booksList.isEmpty()) {
