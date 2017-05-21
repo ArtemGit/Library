@@ -140,8 +140,12 @@ app.controller("mainLibraryController", ['$sce', '$scope', '$http', 'Book', 'cfp
                         }, function errorCallback(response) {
                             alert("Ошибки работы сервиса");
                         });
-
-
+                     if (errorResult.status === 409)
+                         $http.get("/book/ErrorDeleteConflict").then(function successCallback(response) {
+                             $scope.html2 = $sce.trustAsHtml(response.data);
+                         }, function errorCallback(response) {
+                             alert("Ошибки работы сервиса");
+                         });
                 });
         });
     };

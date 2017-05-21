@@ -78,5 +78,12 @@ public class MessageController {
         model.setViewName("errorMessage");
         return model;
     }
+    @RequestMapping(value = "/book/ErrorDeleteConflict", method = RequestMethod.GET)
+    public ModelAndView getErrorDeleteConflictMessage() {
+        ModelAndView model = new ModelAndView();
+        model.addObject("message", "По данному журналу есть история просмотров очистите её!!");
+        model.setViewName("errorMessage");
+        return model;
+    }
 
     }

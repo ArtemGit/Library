@@ -1,9 +1,11 @@
 package by.springboot.testtask.web;
 
 import by.springboot.testtask.domain.Book;
+import by.springboot.testtask.domain.History;
 import by.springboot.testtask.domain.LRUCache;
 import by.springboot.testtask.reposiroty.BookRepository;
 import by.springboot.testtask.reposiroty.FileContentInterface;
+import by.springboot.testtask.reposiroty.HistoryRepository;
 import jersey.repackaged.com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -34,6 +36,9 @@ import java.util.stream.Collectors;
 public class BooksController {
 
     @Autowired
+    private HistoryRepository historyRepository;
+
+    @Autowired
     private BookRepository bookRepository;
 
     @Autowired
@@ -56,6 +61,15 @@ public class BooksController {
         return new ResponseEntity<List<Book>>(booksList, HttpStatus.OK);
     }
 
+
+    private History findByIdBook(int id)
+    {
+        List<History> lh= Lists.newArrayList(historyRepository.findAll()).stream().
+                filter(h->h.getBook().getIdbook()==id).
+                collect(Collectors.toList());
+        return lh!=null?lh.get(0):null;
+    }
+
     ////////////////////-----Delete book from library
     @RequestMapping(value = "/books/{idbook}", method = RequestMethod.DELETE)
     public ResponseEntity<Book> deleteBook(@PathVariable("idbook") int id, HttpServletRequest request) {
@@ -64,6 +78,8 @@ public class BooksController {
             System.out.println("Unable to delete. Book with id " + id + " not found");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        if(findByIdBook(id)!=null)
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         bookRepository.delete(id);
         String pathToLibraryFiles = request.getSession().getServletContext().getRealPath("/resources");
         String pathToZip = pathToLibraryFiles.substring(0, pathToLibraryFiles.indexOf(File.separator)) + File.separator;
