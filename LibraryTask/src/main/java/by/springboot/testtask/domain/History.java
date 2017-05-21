@@ -19,10 +19,10 @@ public class History {
 
 
     @ManyToOne
-    @JoinColumn(name = "history_id", nullable = false)
+    @JoinColumn(name = "bookHistory", nullable = false)
     private Book book;
 
     @ManyToOne
-    @JoinColumn(name = "user_username", nullable = false)
+    @JoinColumn(name = "userBookHistory", nullable = false)
     private User user;
 }
