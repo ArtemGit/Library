@@ -171,9 +171,9 @@ public class BooksController {
         String pathToLibraryFiles = request.getSession().getServletContext().getRealPath("/resources/Library");
         File folder = new File(pathToLibraryFiles);
         //Zip saves in the parent folder if was F:\Folder\Folder2\File.pdf => zip will be in F:\
-        String pathToZip = folder.getPath().substring(0, folder.getPath().lastIndexOf(File.separator)) + File.separator;
-        int countBooksInLibrary = content.countZipFilesInLibrary(pathToZip);
-        File zipFolder = new File(pathToZip);
+       // String pathToZip = (folder.getPath()+File.separator).substring(0, folder.getPath().lastIndexOf(File.separator)) + File.separator;
+        int countBooksInLibrary = content.countZipFilesInLibrary(folder.getPath());
+        File zipFolder = new File(folder.getPath());
         int cacheSize = lruCacheContent.getCacheSize();
         //если кэш пустой
         if (countBooksInLibrary > cacheSize) {
@@ -184,7 +184,7 @@ public class BooksController {
         //в кэшe нет файла
         if (fileContentCache == null) {
             try {
-                String archiveBook = zipFolder.getPath() + idbook + ".zip";
+                String archiveBook = zipFolder.getPath() +File.separator+ idbook + ".zip";
                 File fileContent = content.getFileFromZip(archiveBook);
                 if (fileContent.exists()) {
                     lruCacheContent.put(idbook, content.convertFileToByte(fileContent));
