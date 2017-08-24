@@ -194,7 +194,7 @@
                 <div class="row">
                     <div class="form-actions floatRight">
 
-                        <input type="submit"  value= "{{!ifExist(book) ? 'Добавить журнал' : 'Обновить описание журнала'}}" class="btn btn-primary btn-sm" ng-disabled="myForm.$invalid">
+                        <input type="submit"  value= "{{'Сохранить журнал'}}" class="btn btn-primary btn-sm" ng-disabled="myForm.$invalid">
                     </div>
                 </div>
             </form>

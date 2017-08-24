@@ -1,14 +1,12 @@
 package by.springboot.testtask.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+
 
 import javax.persistence.*;
 
 
 @Entity
-@Getter
-@Setter
+
 @Table(name = "history")
 public class History {
 
@@ -28,5 +26,35 @@ public class History {
     @JoinColumn(name = "username", nullable = false)
     private User user;
 
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

@@ -23,5 +23,7 @@ public interface FileContentInterface {
 
     boolean deleteZipFile(String startPath,String nameFile);
 
+    boolean deleteImageFile(String startPath,String nameFile);
+
     File convert(MultipartFile file, String path) throws IOException;
 }

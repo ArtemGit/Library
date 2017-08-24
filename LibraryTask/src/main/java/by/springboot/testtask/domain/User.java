@@ -1,16 +1,11 @@
 package by.springboot.testtask.domain;
 
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Entity
-@Getter
-@Setter
+
 @Table(name = "users")
 public class User {
 
@@ -21,4 +16,20 @@ public class User {
     @Column(name="password")
     private String password;
 
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

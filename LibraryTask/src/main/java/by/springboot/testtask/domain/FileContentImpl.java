@@ -78,6 +78,25 @@ public class FileContentImpl implements FileContentInterface {
         }
         return false;
     }
+
+    public boolean deleteImageFile(String startPath,String nameFile)
+    {
+        File[] filesList;
+        File filesPath = new File(startPath); // создаем объект на папку с файлами
+
+        filesList = filesPath.listFiles(); // записываем файлы из папки в массив объектов типа File
+
+        for (int i = 0; i < filesList.length; i++) {
+            if (!filesList[i].isDirectory()) {
+                String fname = filesList[i].getName();
+                if ((fname.compareTo(nameFile)==0)) {
+                    filesList[i].delete();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public void toZip(File file,int idBook) throws IOException {
         String fileNmae=file.getName();
         String fpath=file.getPath();

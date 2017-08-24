@@ -1,16 +1,9 @@
 package by.springboot.testtask.domain;
 
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
-@Getter
-@Setter
 @Table(name = "book")
 public class Book {
 
@@ -58,4 +51,116 @@ public class Book {
 
     @Column(name="image_name")
     private String imageName;
+
+    public int getIdbook() {
+        return idbook;
+    }
+
+    public void setIdbook(int idbook) {
+        this.idbook = idbook;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPublicationPlace() {
+        return publicationPlace;
+    }
+
+    public void setPublicationPlace(String publicationPlace) {
+        this.publicationPlace = publicationPlace;
+    }
+
+    public String getPublishHouse() {
+        return publishHouse;
+    }
+
+    public void setPublishHouse(String publishHouse) {
+        this.publishHouse = publishHouse;
+    }
+
+    public int getPublishStartYear() {
+        return publishStartYear;
+    }
+
+    public void setPublishStartYear(int publishStartYear) {
+        this.publishStartYear = publishStartYear;
+    }
+
+    public int getPublishEndYear() {
+        return publishEndYear;
+    }
+
+    public void setPublishEndYear(int publishEndYear) {
+        this.publishEndYear = publishEndYear;
+    }
+
+    public int getElectVerStartYear() {
+        return electVerStartYear;
+    }
+
+    public void setElectVerStartYear(int electVerStartYear) {
+        this.electVerStartYear = electVerStartYear;
+    }
+
+    public int getElectVerEndYear() {
+        return electVerEndYear;
+    }
+
+    public void setElectVerEndYear(int electVerEndYear) {
+        this.electVerEndYear = electVerEndYear;
+    }
+
+    public long getIssn() {
+        return issn;
+    }
+
+    public void setIssn(long issn) {
+        this.issn = issn;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getSigned() {
+        return signed;
+    }
+
+    public void setSigned(Boolean signed) {
+        this.signed = signed;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
 }
